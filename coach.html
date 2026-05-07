@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Debate Coach Pro — AI Powered</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f1a;
+    --bg2: #16162a;
+    --surface: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.09);
+    --border2: rgba(255,255,255,0.15);
+    --accent: #e94560;
+    --gold: #f5a623;
+    --teal: #3ecfcf;
+    --text: #f0f0f0;
+    --muted: rgba(240,240,240,0.45);
+    --radius: 14px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(233,69,96,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 10% 80%, rgba(62,207,207,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 50% 50%, rgba(245,166,35,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 1.25rem 5rem; }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15,15,26,0.8);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-pill {
+    background: rgba(62,207,207,0.15);
+    border: 1px solid rgba(62,207,207,0.3);
+    color: var(--teal);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .8px;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 3.5rem 1rem 2.5rem;
+    animation: fadeUp .6s ease both;
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(62,207,207,0.1);
+    border: 1px solid rgba(62,207,207,0.25);
+    border-radius: 20px;
+    padding: 5px 16px;
+    font-size: 12px;
+    color: var(--teal);
+    font-weight: 500;
+    letter-spacing: .6px;
+    margin-bottom: 1.25rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.08;
+    background: linear-gradient(135deg, #fff 40%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: .75rem;
+  }
+
+  .hero-sub {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 480px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    animation: fadeUp .5s ease both;
+  }
+
+  .section-label {
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 1.8px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: .9rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* TOPIC SETUP */
+  .topic-row { display: flex; gap: .75rem; }
+  input[type="text"], select, textarea {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14.5px;
+    outline: none;
+    transition: border-color .2s, background .2s;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus {
+    border-color: rgba(233,69,96,0.5);
+    background: rgba(255,255,255,0.07);
+  }
+  input[type="text"] { padding: .75rem 1rem; flex: 1; }
+  input[type="text"]::placeholder, textarea::placeholder { color: rgba(255,255,255,0.25); }
+  select { padding: .65rem 1rem; width: 100%; appearance: none; cursor: pointer; }
+  select option { background: #1a1a2e; }
+  textarea { padding: .75rem 1rem; resize: none; width: 100%; line-height: 1.65; }
+  .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: .75rem; }
+
+  /* BUTTONS */
+  .btn {
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-accent { background: var(--accent); color: #fff; padding: .75rem 1.5rem; }
+  .btn-accent:hover { opacity: .88; }
+  .btn-gold {
+    background: rgba(245,166,35,0.15);
+    border: 1px solid rgba(245,166,35,0.3);
+    color: var(--gold);
+    padding: .6rem 1.2rem;
+  }
+  .btn-gold:hover { background: rgba(245,166,35,0.22); }
+  .btn-ghost {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: .6rem 1.2rem;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-full { width: 100%; padding: .8rem; margin-top: .75rem; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .35rem;
+  }
+  .tab {
+    flex: 1;
+    padding: .6rem .5rem;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .2s;
+  }
+  .tab.active {
+    background: rgba(233,69,96,0.18);
+    border: 1px solid rgba(233,69,96,0.35);
+    color: #fff;
+  }
+
+  /* FRAMEWORKS GRID */
+  .fw-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .65rem;
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 640px) { .fw-grid { grid-template-columns: 1fr 1fr; } }
+  .fw-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .9rem;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    text-align: center;
+  }
+  .fw-card:hover { border-color: rgba(233,69,96,0.4); background: rgba(233,69,96,0.05); }
+  .fw-icon { font-size: 1.4rem; margin-bottom: .35rem; }
+  .fw-name { font-size: 12.5px; font-weight: 500; margin-bottom: .2rem; }
+  .fw-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+  /* ARG BUILDER */
+  .arg-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem;
+    margin-bottom: .75rem;
+  }
+  @media (max-width: 560px) { .arg-grid { grid-template-columns: 1fr; } }
+  .arg-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+  .arg-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: .5rem;
+  }
+  .arg-box textarea {
+    background: transparent;
+    border: none;
+    padding: 0;
+    min-height: 78px;
+    font-size: 13.5px;
+  }
+  .arg-box textarea:focus { border: none; background: transparent; }
+
+  /* AI OUTPUT PANEL */
+  .ai-panel {
+    background: rgba(245,166,35,0.05);
+    border: 1px solid rgba(245,166,35,0.18);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-top: .75rem;
+    display: none;
+  }
+  .ai-panel.show { display: block; animation: fadeUp .3s ease both; }
+  .ai-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .9rem; }
+  .ai-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+  .ai-label { font-size: 12px; font-weight: 500; color: var(--gold); letter-spacing: .5px; }
+  .ai-content {
+    font-size: 14px;
+    line-height: 1.85;
+    color: rgba(240,240,240,0.88);
+    white-space: pre-wrap;
+  }
+
+  /* CHAT */
+  .chat-area {
+    display: flex;
+    flex-direction: column;
+    gap: .65rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: .5rem;
+    margin-bottom: .75rem;
+  }
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+  .msg {
+    border-radius: 12px;
+    padding: .7rem 1rem;
+    font-size: 13.5px;
+    line-height: 1.7;
+    max-width: 88%;
+    animation: fadeUp .25s ease both;
+  }
+  .msg.opponent {
+    background: rgba(233,69,96,0.1);
+    border: 1px solid rgba(233,69,96,0.2);
+    align-self: flex-start;
+  }
+  .msg.user {
+    background: rgba(245,166,35,0.1);
+    border: 1px solid rgba(245,166,35,0.2);
+    align-self: flex-end;
+  }
+  .msg.system {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    align-self: center;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    max-width: 100%;
+    font-style: italic;
+  }
+  .msg-role {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: .25rem;
+    color: var(--muted);
+  }
+  .chat-row { display: flex; gap: .6rem; }
+  .chat-input { flex: 1; padding: .7rem 1rem; }
+
+  /* SCORE CARDS */
+  .score-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .65rem;
+    margin-bottom: .9rem;
+  }
+  @media (max-width: 560px) { .score-row { grid-template-columns: 1fr 1fr; } }
+  .score-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .score-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: .25rem;
+  }
+  .score-lbl { font-size: 11px; color: var(--muted); letter-spacing: .5px; }
+  .c-teal { color: var(--teal); }
+  .c-green { color: #7fc87f; }
+  .c-red { color: var(--accent); }
+  .c-gold { color: var(--gold); }
+
+  /* SPINNER */
+  .spin {
+    width: 13px; height: 13px;
+    border: 2px solid rgba(255,255,255,.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    background: #1e2040;
+    border: 1px solid rgba(245,166,35,0.35);
+    border-radius: 10px;
+    padding: .7rem 1.1rem;
+    font-size: 13px;
+    color: var(--gold);
+    z-index: 9999;
+    max-width: 300px;
+    animation: fadeUp .25s ease both;
+  }
+  .toast.error {
+    border-color: rgba(233,69,96,0.35);
+    color: var(--accent);
+  }
+
+  /* SERVER STATUS */
+  .server-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: .6rem 1rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-top: .75rem;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+  .status-dot.online { background: #7fc87f; }
+  .status-dot.offline { background: var(--accent); }
+
+  .hidden { display: none; }
+  .flex-row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .75rem; }
+
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Debate<span>Coach</span> Pro</div>
+  <div class="nav-pill">✦ GEMINI POWERED</div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">✦ Powered by Google Gemini AI</div>
+    <h1>Your Personal<br/>Debate Coach</h1>
+    <p class="hero-sub">Build structured arguments, practice live against AI, and get expert-level scoring — all in your browser.</p>
+  </div>
+
+  <!-- TOPIC SETUP -->
+  <div class="card" style="animation-delay:.05s">
+    <div class="section-label">Your Debate Topic</div>
+    <div class="topic-row">
+      <input type="text" id="topicInput" placeholder="e.g. Social media does more harm than good" maxlength="300" />
+      <button class="btn btn-accent" onclick="setTopic()">Set Topic</button>
+    </div>
+    <div class="meta-row">
+      <select id="stanceSelect">
+        <option value="for">I argue FOR the motion</option>
+        <option value="against">I argue AGAINST the motion</option>
+      </select>
+      <select id="levelSelect">
+        <option value="beginner">Beginner level</option>
+        <option value="intermediate">Intermediate level</option>
+        <option value="advanced">Advanced / Competitive</option>
+      </select>
+    </div>
+    <div class="server-status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Checking server connection...</span>
+    </div>
+  </div>
+
+  <!-- FRAMEWORKS -->
+  <div class="section-label" style="margin-bottom:.6rem">Debate Frameworks — Click to Load</div>
+  <div class="fw-grid">
+    <div class="fw-card" onclick="loadFramework('PEEL')">
+      <div class="fw-icon">📌</div>
+      <div class="fw-name">PEEL</div>
+      <div class="fw-desc">Point · Evidence · Explain · Link</div>
+    </div>
+    <div class="fw-card" onclick="loadFramework('Toulmin')">
+      <div class="fw-icon">🏛</div>
+      <div class="fw-name">Toulmin</div>
+      <div class="fw-desc">Claim · Data · Warrant · Backing</div>
+    </div>
+    <div class="fw-card" onclick="loadFramework('Rebuttal')">
+      <div class="fw-icon">⚔</div>
+      <div class="fw-name">Rebuttal</div>
+      <div class="fw-desc">Counter &amp; Refute tactics</div>
+    </div>
+    <div class="fw-card" onclick="loadFramework('Opening')">
+      <div class="fw-icon">🎙</div>
+      <div class="fw-name">Opening</div>
+      <div class="fw-desc">Hook · Position · Preview</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('build')" id="tab-build">🛠 Build Arguments</button>
+    <button class="tab" onclick="switchTab('practice')" id="tab-practice">🥊 Live Practice</button>
+    <button class="tab" onclick="switchTab('score')" id="tab-score">📊 Score & Feedback</button>
+  </div>
+
+  <!-- TAB: BUILD -->
+  <div id="panel-build">
+    <div class="card">
+      <div class="section-label">Argument Builder</div>
+      <div class="arg-grid">
+        <div class="arg-box">
+          <div class="arg-label">Main Claim</div>
+          <textarea id="argClaim" placeholder="State your core claim clearly..."></textarea>
+        </div>
+        <div class="arg-box">
+          <div class="arg-label">Evidence / Data</div>
+          <textarea id="argEvidence" placeholder="Statistics, studies, expert quotes..."></textarea>
+        </div>
+        <div class="arg-box">
+          <div class="arg-label">Reasoning / Warrant</div>
+          <textarea id="argReasoning" placeholder="Why does the evidence support your claim?"></textarea>
+        </div>
+        <div class="arg-box">
+          <div class="arg-label">Counter & Rebuttal</div>
+          <textarea id="argRebuttal" placeholder="Anticipate objections and pre-empt them..."></textarea>
+        </div>
+      </div>
+      <button class="btn btn-accent btn-full" id="analyzeBtn" onclick="analyzeArgument()">
+        ✦ Analyse & Strengthen My Argument
+      </button>
+    </div>
+    <div class="ai-panel" id="buildOutput">
+      <div class="ai-header">
+        <div class="ai-dot"></div>
+        <span class="ai-label">AI Debate Coach — Feedback</span>
+      </div>
+      <div class="ai-content" id="buildText"></div>
+    </div>
+  </div>
+
+  <!-- TAB: PRACTICE -->
+  <div id="panel-practice" class="hidden">
+    <div class="card">
+      <div class="section-label">Live Debate Practice</div>
+      <div class="chat-area" id="chatArea">
+        <div class="msg system">Set your topic above, then click "Start Debate". The AI will argue the opposite side.</div>
+      </div>
+      <div class="chat-row">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your argument and press Enter..." maxlength="1000"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat()}" />
+        <button class="btn btn-accent" id="sendBtn" onclick="sendChat()">Send ↗</button>
+      </div>
+      <div class="flex-row">
+        <button class="btn btn-accent" id="startBtn" onclick="startDebate()" style="font-size:13px;padding:.55rem 1.1rem">⚡ Start Debate</button>
+        <button class="btn btn-gold" onclick="getHint()" style="font-size:13px">💡 Get Hint</button>
+        <button class="btn btn-ghost" onclick="clearChat()" style="font-size:13px">🗑 Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: SCORE -->
+  <div id="panel-score" class="hidden">
+    <div class="card">
+      <div class="section-label">Paste Argument for Scoring</div>
+      <textarea id="scoreInput" placeholder="Paste your full argument or debate transcript here..." rows="6"></textarea>
+      <button class="btn btn-accent btn-full" id="scoreBtn" onclick="scoreArgument()">
+        📊 Score My Performance
+      </button>
+    </div>
+    <div id="scoreCards" class="hidden">
+      <div class="score-row">
+        <div class="score-card">
+          <div class="score-val c-teal" id="scoreLogic">—</div>
+          <div class="score-lbl">Logic</div>
+        </div>
+        <div class="score-card">
+          <div class="score-val c-green" id="scoreClarity">—</div>
+          <div class="score-lbl">Clarity</div>
+        </div>
+        <div class="score-card">
+          <div class="score-val c-red" id="scoreRebuttal">—</div>
+          <div class="score-lbl">Rebuttal</div>
+        </div>
+        <div class="score-card">
+          <div class="score-val c-gold" id="scoreOverall">—</div>
+          <div class="score-lbl">Overall /10</div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-panel" id="scoreOutput">
+      <div class="ai-header">
+        <div class="ai-dot"></div>
+        <span class="ai-label">Judge's Score Report</span>
+      </div>
+      <div class="ai-content" id="scoreText"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Debate Coach Pro &mdash; Powered by Google Gemini API &mdash; Built for learners, competitors &amp; coaches
+</footer>
+
+<script>
+// ── CONFIG ──
+const SERVER = 'http://localhost:3000';
+
+// ── STATE ──
+let topic = '';
+let stance = 'for';
+let level = 'beginner';
+let chatHistory = [];
+
+// ── SERVER STATUS CHECK ──
+async function checkServer() {
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  try {
+    const res = await fetch(SERVER + '/api/health');
+    if (!res.ok) throw new Error('not ok');
+    dot.className = 'status-dot online';
+    text.textContent = 'Server connected — Gemini AI ready';
+  } catch {
+    dot.className = 'status-dot offline';
+    text.textContent = 'Server offline — run: node server.js';
+  }
+}
+
+// ── CALL BACKEND API ──
+async function callAPI(endpoint, body) {
+  const response = await fetch(SERVER + endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Server error: ' + response.status);
+  }
+
+  return data.result;
+}
+
+// ── TOAST ──
+function toast(msg, isError = false) {
+  const el = document.createElement('div');
+  el.className = 'toast' + (isError ? ' error' : '');
+  el.textContent = (isError ? '✗ ' : '✓ ') + msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ── TOPIC ──
+function setTopic() {
+  const t = document.getElementById('topicInput').value.trim();
+  if (!t) { toast('Please enter a debate topic.', true); return; }
+  topic = t;
+  stance = document.getElementById('stanceSelect').value;
+  level = document.getElementById('levelSelect').value;
+  chatHistory = [];
+  toast('Topic set: "' + topic.substring(0, 40) + (topic.length > 40 ? '...' : '') + '"');
+}
+
+// ── TABS ──
+function switchTab(tab) {
+  ['build', 'practice', 'score'].forEach(t => {
+    document.getElementById('panel-' + t).classList.toggle('hidden', t !== tab);
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  });
+}
+
+// ── FRAMEWORKS ──
+function loadFramework(fw) {
+  if (!topic) { toast('Set a topic first!', true); return; }
+  switchTab('build');
+  const frames = {
+    PEEL: {
+      claim: '[POINT] ' + topic + ' because...',
+      evidence: '[EVIDENCE] According to [source], research shows that...',
+      reasoning: '[EXPLAIN] This demonstrates that... which means...',
+      rebuttal: '[LINK] Therefore, it is clear that... While critics may argue [...], this fails because...'
+    },
+    Toulmin: {
+      claim: '[CLAIM] It is clear that ' + topic + '...',
+      evidence: '[DATA] Studies and statistics indicate that...',
+      reasoning: '[WARRANT] This evidence supports my claim because...',
+      rebuttal: '[QUALIFIER] Although some may argue [...], the backing shows...'
+    },
+    Rebuttal: {
+      claim: 'The opposing side argues that...',
+      evidence: 'However, evidence directly contradicts this: ...',
+      reasoning: 'Their argument fails because it overlooks...',
+      rebuttal: 'Even granting their premise, the conclusion does not follow because...'
+    },
+    Opening: {
+      claim: '[HOOK] Imagine a world where... Today I stand to argue that ' + topic + '...',
+      evidence: '[PREVIEW] I will prove this through three points: 1)... 2)... 3)...',
+      reasoning: 'Each point reveals why ' + topic + '...',
+      rebuttal: 'The opposition may claim [...] — but I will demonstrate this is fundamentally flawed.'
+    }
+  };
+  const f = frames[fw];
+  document.getElementById('argClaim').value = f.claim;
+  document.getElementById('argEvidence').value = f.evidence;
+  document.getElementById('argReasoning').value = f.reasoning;
+  document.getElementById('argRebuttal').value = f.rebuttal;
+  toast(fw + ' framework loaded!');
+}
+
+// ── ANALYSE ARGUMENT ──
+async function analyzeArgument() {
+  if (!topic) { toast('Set a debate topic first!', true); return; }
+  const claim = document.getElementById('argClaim').value.trim();
+  if (!claim) { toast('Please enter your main claim.', true); return; }
+
+  const btn = document.getElementById('analyzeBtn');
+  btn.innerHTML = '<span class="spin"></span> Analysing...';
+  btn.disabled = true;
+
+  const output = document.getElementById('buildOutput');
+  const text = document.getElementById('buildText');
+  output.classList.add('show');
+  text.textContent = 'Analysing your argument with Gemini AI...';
+
+  try {
+    const result = await callAPI('/api/analyse', {
+      topic,
+      stance,
+      level,
+      claim,
+      evidence: document.getElementById('argEvidence').value,
+      reasoning: document.getElementById('argReasoning').value,
+      rebuttal: document.getElementById('argRebuttal').value
+    });
+    text.textContent = result;
+  } catch (e) {
+    text.textContent = 'Error: ' + e.message + '\n\nMake sure your server is running: node server.js';
+    toast(e.message, true);
+  }
+
+  btn.innerHTML = '✦ Analyse & Strengthen My Argument';
+  btn.disabled = false;
+}
+
+// ── LIVE DEBATE ──
+function addMsg(role, text, loading = false) {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if (role !== 'system') {
+    const label = document.createElement('div');
+    label.className = 'msg-role';
+    label.textContent = role === 'user' ? 'You' : 'AI Opponent';
+    div.appendChild(label);
+  }
+  const body = document.createElement('div');
+  body.textContent = loading ? '...' : text;
+  if (loading) body.style.fontStyle = 'italic';
+  div.appendChild(body);
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+  return div;
+}
+
+function clearChat() {
+  chatHistory = [];
+  document.getElementById('chatArea').innerHTML =
+    '<div class="msg system">Chat cleared. Click "Start Debate" to begin again.</div>';
+}
+
+async function startDebate() {
+  if (!topic) { toast('Set a topic first!', true); return; }
+  chatHistory = [];
+
+  const btn = document.getElementById('startBtn');
+  btn.innerHTML = '<span class="spin"></span> Starting...';
+  btn.disabled = true;
+
+  document.getElementById('chatArea').innerHTML =
+    `<div class="msg system">Debate started — Topic: "${topic}" | You argue ${stance === 'for' ? 'FOR' : 'AGAINST'} | AI argues ${stance === 'for' ? 'AGAINST' : 'FOR'}</div>`;
+
+  const loadEl = addMsg('opponent', '...', true);
+
+  try {
+    const result = await callAPI('/api/debate', {
+      topic, stance, level,
+      action: 'start',
+      messages: [{ role: 'user', content: 'Give your opening argument.' }]
+    });
+    loadEl.remove();
+    addMsg('opponent', result);
+    chatHistory.push({ role: 'assistant', content: result });
+  } catch (e) {
+    loadEl.remove();
+    addMsg('system', 'Error: ' + e.message + ' — Is the server running?');
+  }
+
+  btn.innerHTML = '⚡ Start Debate';
+  btn.disabled = false;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  if (!topic) { toast('Set a topic first!', true); return; }
+  if (chatHistory.length === 0) { toast('Click Start Debate first!', true); return; }
+
+  input.value = '';
+  addMsg('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
+
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  const loadEl = addMsg('opponent', '...', true);
+
+  try {
+    const result = await callAPI('/api/debate', {
+      topic, stance, level,
+      action: 'reply',
+      messages: chatHistory
+    });
+    loadEl.remove();
+    addMsg('opponent', result);
+    chatHistory.push({ role: 'assistant', content: result });
+
+    // Keep chat history to last 10 messages AFTER the full exchange is recorded
+    if (chatHistory.length > 10) {
+      chatHistory = chatHistory.slice(-10);
+    }
+  } catch (e) {
+    loadEl.remove();
+    addMsg('system', 'Error: ' + e.message);
+  }
+
+  btn.disabled = false;
+  document.getElementById('chatInput').focus();
+}
+
+async function getHint() {
+  if (!topic) { toast('Set a topic first!', true); return; }
+  if (chatHistory.length === 0) { toast('Start a debate first!', true); return; }
+
+  try {
+    const last = chatHistory.slice(-2);
+    const hint = await callAPI('/api/debate', {
+      topic, stance, level,
+      action: 'hint',
+      messages: [...last, { role: 'user', content: 'What is my best next move?' }]
+    });
+    addMsg('system', '💡 Coach hint: ' + hint);
+    document.getElementById('chatArea').scrollTop = 99999;
+  } catch (e) {
+    toast('Could not get hint: ' + e.message, true);
+  }
+}
+
+// ── SCORE ──
+async function scoreArgument() {
+  const text = document.getElementById('scoreInput').value.trim();
+  if (!text) { toast('Paste an argument to score.', true); return; }
+  if (!topic) { toast('Set a topic first!', true); return; }
+
+  const btn = document.getElementById('scoreBtn');
+  btn.innerHTML = '<span class="spin"></span> Scoring...';
+  btn.disabled = true;
+
+  try {
+    const result = await callAPI('/api/score', {
+      topic, stance, level,
+      argument: text
+    });
+
+    document.getElementById('scoreText').textContent = result;
+    document.getElementById('scoreOutput').classList.add('show');
+
+    function parseScore(label) {
+      const m = result.match(new RegExp(label + ':\\s*(\\d+)'));
+      return m ? m[1] : '—';
+    }
+
+    document.getElementById('scoreLogic').textContent = parseScore('LOGIC');
+    document.getElementById('scoreClarity').textContent = parseScore('CLARITY');
+    document.getElementById('scoreRebuttal').textContent = parseScore('REBUTTAL');
+    document.getElementById('scoreOverall').textContent = parseScore('OVERALL');
+    document.getElementById('scoreCards').classList.remove('hidden');
+
+  } catch (e) {
+    document.getElementById('scoreText').textContent = 'Error: ' + e.message;
+    document.getElementById('scoreOutput').classList.add('show');
+    toast(e.message, true);
+  }
+
+  btn.innerHTML = '📊 Score My Performance';
+  btn.disabled = false;
+}
+
+// ── INIT ──
+window.addEventListener('load', () => {
+  checkServer();
+  // Recheck every 30 seconds
+  setInterval(checkServer, 30000);
+});
+</script>
+</body>
+</html>
