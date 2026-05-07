@@ -121,3 +121,4 @@ OVERALL: 8/10
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
 });
+export default app;
